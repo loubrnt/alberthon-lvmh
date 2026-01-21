@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LVMH ROI Calculator - Pondération</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom, #f8fafc, #e2e8f0);
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .gold-accent {
+            color: #d4af37;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Custom slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 12px;
+            border-radius: 6px;
+            background: linear-gradient(to right, #10b981 0%, #10b981 50%, #3b82f6 50%, #3b82f6 100%);
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 3px solid #d4af37;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 3px solid #d4af37;
+        }
+        
+        .metric-card {
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <!-- Navbar -->
+    <nav class="navbar sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <img src="https://images.prismic.io/lvmh-com/30805741-49de-497a-82b5-23ff332c2464_LOGO+LVMH+2024.png?auto=compress%2Cformat&fit=max&w=1080" alt="LVMH Logo" class="h-8 w-auto">
+                    <span class="text-xl font-bold text-gray-800">LVMH ROI Calculator</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/home" class="text-gray-600 hover:text-gray-800 transition text-sm flex items-center">
+                        <i data-lucide="home" class="w-4 h-4 mr-1"></i>
+                        Accueil
+                    </a>
+                    <span class="text-gray-600 text-sm">
+                        <i data-lucide="user" class="w-4 h-4 inline"></i>
+                        {{ user.username }}
+                    </span>
+                    <a href="/logout" class="text-red-600 hover:text-red-700 transition flex items-center text-sm">
+                        <i data-lucide="log-out" class="w-4 h-4 mr-1"></i>
+                        Déconnexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Contenu principal -->
+    <div class="max-w-6xl mx-auto px-4 py-12">
+        
+        <!-- En-tête -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center bg-white px-6 py-3 rounded-full shadow-md mb-4">
+                <i data-lucide="building" class="w-5 h-5 gold-accent mr-2"></i>
+                <span class="font-semibold text-gray-700">{{ selected_house }}</span>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Pondération ROI</h1>
+            <p class="text-gray-600">Ajustez l'importance de chaque critère selon vos priorités</p>
+        </div>
+        
+        <!-- Récapitulatif des équipements -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                <i data-lucide="package" class="w-5 h-5 mr-2 gold-accent"></i>
+                Équipements sélectionnés
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for equipment in equipments %}
+                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-medium text-gray-800">{{ equipment.type }}</span>
+                        <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-sm">×{{ equipment.quantity }}</span>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <div>Prix: {{ equipment.price }}€</div>
+                        <div>Durée de vie: {{ equipment.lifespan }} ans</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Formulaire de pondération -->
+        <form method="POST" action="/calculate-roi" class="bg-white rounded-2xl shadow-xl p-8">
+            
+            <!-- Curseur de pondération -->
+            <div class="mb-12">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">
+                    Ajustez votre pondération
+                </h2>
+                
+                <!-- Affichage des valeurs -->
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i data-lucide="leaf" class="w-10 h-10 text-green-600"></i>
+                        </div>
+                        <div class="text-4xl font-bold text-green-600 mb-2">
+                            <span id="ecoValue">50</span>%
+                        </div>
+                        <div class="text-gray-600 font-medium">Écologique</div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i data-lucide="dollar-sign" class="w-10 h-10 text-blue-600"></i>
+                        </div>
+                        <div class="text-4xl font-bold text-blue-600 mb-2">
+                            <span id="finValue">50</span>%
+                        </div>
+                        <div class="text-gray-600 font-medium">Financier</div>
+                    </div>
+                </div>
+                
+                <!-- Slider -->
+                <div class="relative px-4">
+                    <input 
+                        type="range" 
+                        name="eco_weight" 
+                        id="weightSlider"
+                        min="0" 
+                        max="100" 
+                        value="50"
+                        class="w-full"
+                    >
+                    <div class="flex justify-between mt-2 text-sm text-gray-500">
+                        <span>100% Financier</span>
+                        <span>Équilibré</span>
+                        <span>100% Écologique</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Aperçu des métriques -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="metric-card bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
+                    <i data-lucide="tree-pine" class="w-8 h-8 text-green-600 mb-3"></i>
+                    <h3 class="font-semibold text-gray-800 mb-2">Impact Environnemental</h3>
+                    <p class="text-sm text-gray-600">Empreinte carbone, recyclabilité, durabilité</p>
+                </div>
+                
+                <div class="metric-card bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+                    <i data-lucide="trending-up" class="w-8 h-8 text-blue-600 mb-3"></i>
+                    <h3 class="font-semibold text-gray-800 mb-2">Rentabilité Financière</h3>
+                    <p class="text-sm text-gray-600">Coût total, durée d'utilisation, maintenance</p>
+                </div>
+                
+                <div class="metric-card bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 border border-amber-200">
+                    <i data-lucide="target" class="w-8 h-8 text-amber-600 mb-3"></i>
+                    <h3 class="font-semibold text-gray-800 mb-2">Score Global</h3>
+                    <p class="text-sm text-gray-600">Combinaison pondérée des deux aspects</p>
+                </div>
+            </div>
+            
+            <!-- Bouton calculer -->
+            <button 
+                type="submit"
+                class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold py-4 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center"
+            >
+                <i data-lucide="play-circle" class="w-5 h-5 mr-2"></i>
+                Calculer le ROI
+            </button>
+        </form>
+        
+    </div>
+    
+    <script>
+        lucide.createIcons();
+        
+        // Gestion du slider
+        const slider = document.getElementById('weightSlider');
+        const ecoValue = document.getElementById('ecoValue');
+        const finValue = document.getElementById('finValue');
+        
+        slider.addEventListener('input', function() {
+            const eco = this.value;
+            const fin = 100 - eco;
+            
+            ecoValue.textContent = eco;
+            finValue.textContent = fin;
+            
+            // Mise à jour de la couleur du slider
+            const percentage = (eco / 100) * 100;
+            this.style.background = `linear-gradient(to right, #10b981 0%, #10b981 ${percentage}%, #3b82f6 ${percentage}%, #3b82f6 100%)`;
+        });
+    </script>
+</body>
+</html>

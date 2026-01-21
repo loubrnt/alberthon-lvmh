@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LVMH ROI Calculator - Résultats</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom, #f8fafc, #e2e8f0);
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .gold-accent {
+            color: #d4af37;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Animation du score */
+        @keyframes scoreAnimation {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .score-animate {
+            animation: scoreAnimation 0.6s ease-out;
+        }
+        
+        /* Barre de progression circulaire */
+        .circular-progress {
+            transform: rotate(-90deg);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <!-- Navbar -->
+    <nav class="navbar sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <i data-lucide="gem" class="w-8 h-8 gold-accent"></i>
+                    <span class="text-xl font-bold text-gray-800">LVMH ROI Calculator</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/home" class="text-gray-600 hover:text-gray-800 transition text-sm flex items-center">
+                        <i data-lucide="home" class="w-4 h-4 mr-1"></i>
+                        Accueil
+                    </a>
+                    <span class="text-gray-600 text-sm">
+                        <i data-lucide="user" class="w-4 h-4 inline"></i>
+                        {{ user.username }}
+                    </span>
+                    <a href="/logout" class="text-red-600 hover:text-red-700 transition flex items-center text-sm">
+                        <i data-lucide="log-out" class="w-4 h-4 mr-1"></i>
+                        Déconnexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Contenu principal -->
+    <div class="max-w-6xl mx-auto px-4 py-12">
+        
+        <!-- En-tête -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center bg-white px-6 py-3 rounded-full shadow-md mb-4">
+                <i data-lucide="building" class="w-5 h-5 gold-accent mr-2"></i>
+                <span class="font-semibold text-gray-700">{{ calculation.house }}</span>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Résultats de l'analyse ROI</h1>
+            <p class="text-gray-600">Voici l'évaluation complète de vos équipements</p>
+        </div>
+        
+        <!-- Score global principal -->
+        <div class="bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl shadow-2xl p-8 mb-8 text-white">
+            <div class="text-center">
+                <i data-lucide="award" class="w-16 h-16 mx-auto mb-4 opacity-90"></i>
+                <h2 class="text-2xl font-semibold mb-4">Score Global ROI</h2>
+                <div class="score-animate text-7xl font-bold mb-4">
+                    {{ "%.1f"|format(calculation.global_score) }}<span class="text-4xl">/100</span>
+                </div>
+                <p class="text-amber-100 text-lg">
+                    {% if calculation.global_score >= 80 %}
+                        Excellent - Investissement optimal
+                    {% elif calculation.global_score >= 60 %}
+                        Très bon - Bon équilibre
+                    {% elif calculation.global_score >= 40 %}
+                        Correct - Marge d'amélioration
+                    {% else %}
+                        À améliorer - Consultez les recommandations
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        
+        <!-- Détails des scores -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            
+            <!-- Score écologique -->
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                            <i data-lucide="leaf" class="w-6 h-6 text-green-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800">Score Écologique</h3>
+                            <p class="text-sm text-gray-600">Pondération: {{ "%.0f"|format(calculation.eco_weight) }}%</p>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold text-green-600">
+                        {{ "%.1f"|format(calculation.ecological_score) }}
+                    </div>
+                </div>
+                
+                <!-- Barre de progression -->
+                <div class="w-full bg-gray-200 rounded-full h-4 mb-4">
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 h-4 rounded-full transition-all duration-1000" 
+                         style="width: {{ calculation.ecological_score }}%"></div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div class="bg-green-50 p-3 rounded-lg">
+                        <div class="text-green-600 font-semibold">Empreinte carbone</div>
+                        <div class="text-gray-600">Optimisée</div>
+                    </div>
+                    <div class="bg-green-50 p-3 rounded-lg">
+                        <div class="text-green-600 font-semibold">Recyclabilité</div>
+                        <div class="text-gray-600">Excellente</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Score financier -->
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                            <i data-lucide="trending-up" class="w-6 h-6 text-blue-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800">Score Financier</h3>
+                            <p class="text-sm text-gray-600">Pondération: {{ "%.0f"|format(calculation.financial_weight) }}%</p>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold text-blue-600">
+                        {{ "%.1f"|format(calculation.financial_score) }}
+                    </div>
+                </div>
+                
+                <!-- Barre de progression -->
+                <div class="w-full bg-gray-200 rounded-full h-4 mb-4">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-4 rounded-full transition-all duration-1000" 
+                         style="width: {{ calculation.financial_score }}%"></div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div class="bg-blue-50 p-3 rounded-lg">
+                        <div class="text-blue-600 font-semibold">Coût/Durée</div>
+                        <div class="text-gray-600">Optimisé</div>
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded-lg">
+                        <div class="text-blue-600 font-semibold">ROI à 5 ans</div>
+                        <div class="text-gray-600">Positif</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Détails par équipement -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center">
+                <i data-lucide="list" class="w-6 h-6 mr-2 gold-accent"></i>
+                Détails par équipement
+            </h2>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Équipement</th>
+                            <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Quantité</th>
+                            <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700">Prix unitaire</th>
+                            <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Durée de vie</th>
+                            <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Score éco</th>
+                            <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for equipment in equipments %}
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-4 py-4 text-sm text-gray-800 font-medium">{{ equipment.type }}</td>
+                            <td class="px-4 py-4 text-sm text-gray-600 text-center">{{ equipment.quantity }}</td>
+                            <td class="px-4 py-4 text-sm text-gray-600 text-right">{{ equipment.price }}€</td>
+                            <td class="px-4 py-4 text-sm text-gray-600 text-center">{{ equipment.lifespan }} ans</td>
+                            <td class="px-4 py-4 text-center">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    {{ equipment.eco_score }}/100
+                                </span>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-gray-800 font-semibold text-right">
+                                {{ equipment.price * equipment.quantity }}€
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="bg-gray-50">
+                        <tr>
+                            <td colspan="5" class="px-4 py-4 text-sm font-semibold text-gray-800 text-right">
+                                Investissement total:
+                            </td>
+                            <td class="px-4 py-4 text-sm font-bold text-gray-900 text-right">
+                                {% set ns = namespace(total=0) %}
+                                {% for equipment in equipments %}
+                                    {% set ns.total = ns.total + (equipment.price * equipment.quantity) %}
+                                {% endfor %}
+                                {{ ns.total|int }}€
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Boutons d'action -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <a href="/recommendations/{{ calculation.id }}" 
+               class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold py-4 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center">
+                <i data-lucide="sparkles" class="w-5 h-5 mr-2"></i>
+                Voir les recommandations IA
+            </a>
+            
+            <a href="/home" 
+               class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-4 rounded-xl shadow-lg transition flex items-center justify-center">
+                <i data-lucide="refresh-cw" class="w-5 h-5 mr-2"></i>
+                Nouvelle analyse
+            </a>
+        </div>
+        
+    </div>
+    
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

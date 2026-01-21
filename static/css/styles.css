@@ -1,0 +1,10 @@
+/* Styles CSS custom pour LVMH ROI Calculator */
+/* Les styles principaux sont gérés par Tailwind CSS via CDN */
+/* Ce fichier peut être utilisé pour des styles additionnels */
+
+:root {
+    --gold-primary: #d4af37;
+    --gold-secondary: #c49a2c;
+}
+
+/* Styles globaux additionnels si nécessaire */

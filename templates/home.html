@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LVMH ROI Calculator - Accueil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(to bottom, #f8fafc, #e2e8f0); }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); }
+        .navbar { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <nav class="navbar sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <img src="https://images.prismic.io/lvmh-com/30805741-49de-497a-82b5-23ff332c2464_LOGO+LVMH+2024.png?auto=compress%2Cformat&fit=max&w=1080 alt="LVMH Logo" class="h-8 w-auto">
+                    <span class="text-xs text-gray-500 border-l border-gray-300 pl-3 uppercase tracking-wider">ROI Calculator</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600 text-sm">
+                        <i data-lucide="user" class="w-4 h-4 inline"></i> {{ user.username }}
+                    </span>
+                    <a href="/logout" class="text-red-600 hover:text-red-700 transition flex items-center text-sm">
+                        <i data-lucide="log-out" class="w-4 h-4 mr-1"></i> Déconnexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="max-w-5xl mx-auto px-4 py-12">
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-gray-800 mb-4">Sélectionnez votre Maison</h1>
+            <p class="text-gray-600 text-lg">Pour quelle maison souhaitez-vous effectuer une analyse ROI ?</p>
+        </div>
+        
+        <div class="max-w-2xl mx-auto">
+            <form method="POST" action="/select-house" class="bg-white rounded-2xl shadow-xl p-8">
+                <label class="block text-lg font-semibold text-gray-800 mb-4">
+                    <i data-lucide="building" class="w-5 h-5 inline mr-2 text-amber-600"></i> Maison LVMH
+                </label>
+                <select name="house" required class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-transparent transition text-lg">
+                    <option value="">-- Sélectionnez une maison --</option>
+                    {% for house in houses %}
+                    <option value="{{ house }}">{{ house }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="w-full mt-6 bg-gray-900 hover:bg-black text-white font-semibold py-4 rounded-xl shadow-lg transition transform hover:scale-105 flex items-center justify-center">
+                    <span>Continuer</span> <i data-lucide="arrow-right" class="w-5 h-5 ml-2"></i>
+                </button>
+            </form>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+            <div class="card-hover bg-white rounded-xl p-6 shadow-md">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4"><i data-lucide="calculator" class="w-6 h-6 text-blue-600"></i></div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Calcul Précis</h3>
+                <p class="text-gray-600 text-sm">Analyse financière et écologique complète de vos équipements</p>
+            </div>
+            <div class="card-hover bg-white rounded-xl p-6 shadow-md">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4"><i data-lucide="leaf" class="w-6 h-6 text-green-600"></i></div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Impact Écologique</h3>
+                <p class="text-gray-600 text-sm">Évaluez l'empreinte environnementale selon les standards LIFE 360</p>
+            </div>
+            <div class="card-hover bg-white rounded-xl p-6 shadow-md border border-amber-100">
+                <div class="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center mb-4"><i data-lucide="brain" class="w-6 h-6 text-amber-600"></i></div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">IA Stratégique</h3>
+                <p class="text-gray-600 text-sm">Nouveau : Analyse comparative et trade-offs générés par IA</p>
+            </div>
+        </div>
+
+        <div class="mt-12 text-center border-t border-gray-200 pt-12">
+            <h2 class="text-2xl font-serif text-gray-800 mb-4">Vos simulations précédentes</h2>
+            <a href="/history" class="inline-flex items-center px-8 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 transition">
+                <i data-lucide="history" class="w-5 h-5 mr-2 text-gray-500"></i> Consulter l'historique et comparer
+            </a>
+        </div>
+    </div>
+    
+    <script>lucide.createIcons();</script>
+</body>
+</html>
